@@ -71,7 +71,6 @@ pub async fn save_users_from_group(group: [String; 2], client: Client) {
 
     let mut users: Vec<User> = Vec::new();
     let mut next_link = group[1].clone();
-    let mut writter = csv::Writer::from_path(format!("data/{}.csv", group[0])).unwrap();
     let mut iteration: u32 = 0;
 
     while !next_link.is_empty() {
@@ -98,17 +97,17 @@ pub async fn save_users_from_group(group: [String; 2], client: Client) {
             .await
             .unwrap();
 
-        // Add lines to csv
-        for user in &response.value {
-            writter.serialize(user).unwrap();
-        }
-
         users.append(&mut response.value);
         next_link = response.next_link;
 
         //std::thread::sleep(std::time::Duration::new(0, 500_000_000));
     }
 
+    // Add lines to csv
+    let mut writter = csv::Writer::from_path(format!("data/{}.csv", group[0])).unwrap();
+    for user in &users {
+        writter.serialize(user).unwrap();
+    }
     // Add lines to json
     fs::write(
         format!("data/{}.json", group[0]),

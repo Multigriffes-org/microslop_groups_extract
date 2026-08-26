@@ -34,13 +34,13 @@ fn main() {
         process::exit(1);
     }
 
+    // Prepare the input
     match fs::read_dir("data/") {
         Ok(_) => {}
         Err(_) => {
             let _ = fs::create_dir("data/");
         }
     };
-
     let valid_files: Vec<DirEntry> = fs::read_dir("data/")
         .unwrap()
         .map(|entry| entry.unwrap())
@@ -54,6 +54,7 @@ fn main() {
         })
         .collect();
 
+    // Prepare the output
     match fs::read_dir("output/") {
         Ok(_) => {}
         Err(_) => {

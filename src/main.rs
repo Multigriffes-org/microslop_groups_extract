@@ -78,15 +78,14 @@ async fn main() {
         groups_id.push(group.id);
     }
 
-    let first_url: Vec<[String; 2]> = groups_id.iter()
+    let firsts_url: Vec<[String; 2]> = groups_id.iter()
         .filter(|x| x.len() == 36)
         .map(|x| [x.to_string(), format!("https://graph.microsoft.com/beta/groups/{x}/transitiveMembers/microsoft.graph.user?$orderby=displayName+asc&$top=999&$select=id,userType,displayName,givenName,surname,userPrincipalName,mail,employeeType,department,createdDateTime,lastPasswordChangeDateTime")])
         .collect();
     //println!("{:?}", first_queries_url);
 
     let mut join_handles = Vec::new();
-
-    for first_url in first_url {
+    for first_url in firsts_url {
         join_handles.push(tokio::spawn(save_users_from_group(
             first_url,
             client.clone(),
