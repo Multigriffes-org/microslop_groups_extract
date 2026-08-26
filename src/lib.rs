@@ -1,7 +1,9 @@
-use std::fs;
-
-use reqwest::Client;
+use reqwest::{
+    Client, ClientBuilder,
+    header::{self, HeaderMap, HeaderValue},
+};
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Serialize, Deserialize)]
 struct ListGroupsResponse {
@@ -114,4 +116,32 @@ pub async fn save_users_from_group(group: [String; 2], client: Client) {
         serde_json::to_string_pretty(&users).unwrap(),
     )
     .unwrap();
+}
+
+pub fn new_client_from_token(token: &String, host: &String) -> Client {
+    let mut headers = HeaderMap::new();
+
+    let mut auth_header_value = token.parse::<HeaderValue>().unwrap();
+    auth_header_value.set_sensitive(true);
+
+    headers.insert(header::AUTHORIZATION, auth_header_value);
+    headers.insert(header::HOST, host.parse().unwrap());
+    headers.insert(
+        header::USER_AGENT,
+        "Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0"
+            .parse()
+            .unwrap(),
+    );
+    headers.insert(header::ACCEPT, "*/*".parse().unwrap());
+    headers.insert(
+        header::ACCEPT_LANGUAGE,
+        "fr,en-US;q=0.9,en;q=0.8".parse().unwrap(),
+    );
+    headers.insert(
+        header::ACCEPT_ENCODING,
+        "gzip, deflate, br, zstd".parse().unwrap(),
+    );
+
+    let client_builder = ClientBuilder::new().default_headers(headers);
+    client_builder.build().unwrap()
 }

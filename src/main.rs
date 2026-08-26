@@ -1,8 +1,4 @@
 use microslop_groups_extract::*;
-use reqwest::{
-    ClientBuilder,
-    header::{self, HeaderMap, HeaderValue},
-};
 use std::{env, process};
 
 #[tokio::main]
@@ -29,40 +25,9 @@ async fn main() {
         );
         process::exit(1);
     };
+    let host = "graph.microsoft.com".to_string();
 
-    let mut headers = HeaderMap::new();
-
-    let mut auth_header_value = token.parse::<HeaderValue>().unwrap();
-    auth_header_value.set_sensitive(true);
-
-    headers.insert(header::AUTHORIZATION, auth_header_value);
-    headers.insert(header::HOST, "graph.microsoft.com".parse().unwrap());
-    headers.insert(
-        header::USER_AGENT,
-        "Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0"
-            .parse()
-            .unwrap(),
-    );
-    headers.insert(header::ACCEPT, "*/*".parse().unwrap());
-    headers.insert(
-        header::ACCEPT_LANGUAGE,
-        "fr,en-US;q=0.9,en;q=0.8".parse().unwrap(),
-    );
-    headers.insert(
-        header::ACCEPT_ENCODING,
-        "gzip, deflate, br, zstd".parse().unwrap(),
-    );
-    headers.insert(
-        header::REFERER,
-        "https://myaccount.microsoft.com/".parse().unwrap(),
-    );
-    headers.insert(
-        header::ORIGIN,
-        "https://myaccount.microsoft.com/".parse().unwrap(),
-    );
-
-    let client_builder = ClientBuilder::new().default_headers(headers);
-    let client = client_builder.build().unwrap();
+    let client = new_client_from_token(&token, &host);
 
     let groups = get_groups(account_id, client.clone()).await;
     let mut groups_id = Vec::new();
