@@ -78,29 +78,27 @@ pub async fn save_users_from_group(group: [String; 2], client: Client) {
     while !next_link.is_empty() {
         iteration += 1;
         println!("Group: {}, Page: {iteration}", group[0]);
-        //let mut response = client
-        //    .get(&next_link)
-        //    .send()
-        //    .await
-        //    .unwrap()
-        //    .bytes()
-        //    .await
-        //    .unwrap();
-        //
-        //let _ = std::fs::write("test.txt", &response);
-        //next_link = String::new();
 
-        let mut response: ListUsersResponse = client
+        let response_bytes = client
             .get(&next_link)
             .send()
             .await
             .unwrap()
-            .json()
+            .bytes()
             .await
             .unwrap();
 
-        users.append(&mut response.value);
-        next_link = response.next_link;
+        #[cfg(debug_assertions)]
+        {
+            let _ = fs::write(format!("{}_{iteration}.txt", group[0]), &response_bytes);
+        }
+
+        let mut parsed_response: ListUsersResponse =
+            serde_json::from_slice(&response_bytes).unwrap();
+
+        next_link.clear();
+        users.append(&mut parsed_response.value);
+        next_link = parsed_response.next_link;
 
         //std::thread::sleep(std::time::Duration::new(0, 500_000_000));
     }
