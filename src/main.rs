@@ -17,15 +17,21 @@ async fn main() {
 
     println!("Account Id: {account_id}");
 
-    let token = if let Ok(token) = env::var("ACCESS_TOKEN") {
-        token
-    } else {
+    let host = "graph.microsoft.com".to_string();
+    let Ok(token) = env::var("ACCESS_TOKEN") else {
         println!(
             "Provide the access token in the ACCESS_TOKEN env variable\nexport ACCESS_TOKEN=<access_token>"
         );
         process::exit(1);
     };
-    let host = "graph.microsoft.com".to_string();
+    //let token = if let Ok(token) = env::var("ACCESS_TOKEN") {
+    //    token
+    //} else {
+    //    println!(
+    //        "Provide the access token in the ACCESS_TOKEN env variable\nexport ACCESS_TOKEN=<access_token>"
+    //    );
+    //    process::exit(1);
+    //};
 
     let client = new_client_from_token(&token, &host);
 
