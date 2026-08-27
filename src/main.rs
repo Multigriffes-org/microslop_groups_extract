@@ -24,14 +24,6 @@ async fn main() {
         );
         process::exit(1);
     };
-    //let token = if let Ok(token) = env::var("ACCESS_TOKEN") {
-    //    token
-    //} else {
-    //    println!(
-    //        "Provide the access token in the ACCESS_TOKEN env variable\nexport ACCESS_TOKEN=<access_token>"
-    //    );
-    //    process::exit(1);
-    //};
 
     let client = new_client_from_token(&token, &host);
 

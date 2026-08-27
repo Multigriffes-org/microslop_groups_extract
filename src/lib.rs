@@ -74,10 +74,10 @@ pub async fn save_users_from_group(group: [String; 2], client: Client) {
     let mut users: Vec<User> = Vec::new();
     let mut next_link = group[1].clone();
     let mut iteration: u32 = 0;
+    let mut nbr_user: usize = 0;
 
     while !next_link.is_empty() {
         iteration += 1;
-        println!("Group: {}, Page: {iteration}", group[0]);
 
         let response_bytes = client
             .get(&next_link)
@@ -96,10 +96,14 @@ pub async fn save_users_from_group(group: [String; 2], client: Client) {
         let mut parsed_response: ListUsersResponse =
             serde_json::from_slice(&response_bytes).unwrap();
 
+        nbr_user += parsed_response.value.len();
+        println!(
+            "Group: {}\nPage: {iteration}\nNombre d'utilisateurs: {nbr_user}",
+            group[0]
+        );
         next_link.clear();
         users.append(&mut parsed_response.value);
         next_link = parsed_response.next_link;
-
         //std::thread::sleep(std::time::Duration::new(0, 500_000_000));
     }
 
