@@ -9,4 +9,4 @@ reqwest = { version = "0.13.4", features = ["charset", "gzip", "json"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 tokio = { version = "1.53.1", features = ["full"] }
-turso = "0.7.2"
+#turso = "0.7.2"
